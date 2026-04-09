@@ -1,8 +1,8 @@
 {
   "patient_id": "P003",
-  "name": "Lê Thị C",
+  "name": "Đỗ Thế Anh",
   "age": 38,
-  "sex": "Nữ",
+  "sex": "Nam",
   "conditions": ["Đang mang thai tuần 28"],
   "test_date": "2026-04-08",
   "lab_results": [

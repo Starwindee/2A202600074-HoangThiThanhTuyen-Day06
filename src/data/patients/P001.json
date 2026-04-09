@@ -1,8 +1,8 @@
 {
   "patient_id": "P001",
-  "name": "Nguyễn Thị A",
+  "name": "Võ Thanh Chung",
   "age": 45,
-  "sex": "Nữ",
+  "sex": "Nam",
   "conditions": ["Đái tháo đường type 2"],
   "test_date": "2026-04-08",
   "lab_results": [
