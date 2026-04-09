@@ -185,6 +185,88 @@ def _render_ai_output(result: dict):
     _render_action_buttons()
 
 
+def _build_context_prompt(patient, result: dict) -> str:
+    """Build a patient-aware system prompt for the follow-up chat agent."""
+    lab_lines = "\n".join(
+        f"  - {r.test_name}: {r.value} {r.unit} [{r.flag.value if hasattr(r.flag, 'value') else r.flag}]"
+        for r in patient.lab_results
+    )
+    abnormal = [e for e in (result.get("explanations") or []) if e.get("severity") != "NORMAL"]
+    abnormal_str = (
+        ", ".join(f"{e['test_name']} ({SEVERITY_LABEL_VI.get(e['severity'], e['severity'])})" for e in abnormal)
+        or "Không có chỉ số bất thường"
+    )
+    overall = SEVERITY_LABEL_VI.get(result.get("overall_severity", "NORMAL"), "BÌNH THƯỜNG")
+
+    return f"""Bạn là Vinmec Lumina — trợ lý giải thích kết quả xét nghiệm của Vinmec.
+Bạn đang tư vấn cho bệnh nhân sau:
+  - Tên: {patient.name} | Tuổi: {patient.age} | Giới tính: {patient.sex}
+  - Tiền sử: {', '.join(patient.conditions)}
+  - Ngày xét nghiệm: {patient.test_date}
+
+KẾT QUẢ XÉT NGHIỆM:
+{lab_lines}
+
+ĐÁNH GIÁ HỆ THỐNG:
+  - Mức độ tổng quát: {overall}
+  - Chỉ số cần chú ý: {abnormal_str}
+  - Tóm tắt: {result.get('summary', '')}
+
+GIỚI HẠN BẮT BUỘC:
+  - Chỉ giải thích dựa trên kết quả xét nghiệm trên — không bịa thêm thông tin
+  - KHÔNG chẩn đoán bệnh cụ thể, KHÔNG tư vấn thuốc hoặc liều dùng
+  - Dùng tiếng Việt dễ hiểu, tránh thuật ngữ y khoa phức tạp
+  - Luôn kèm gợi ý "tham khảo bác sĩ" khi không chắc chắn
+  - Nếu câu hỏi vượt phạm vi kết quả xét nghiệm này, từ chối lịch sự"""
+
+
+def _render_followup_chat(patient, result: dict):
+    st.divider()
+    st.markdown("#### 💬 Hỏi thêm Lumina về kết quả")
+
+    # Render existing conversation
+    for msg in st.session_state.get("chat_display", []):
+        avatar = "🏥" if msg["role"] == "assistant" else None
+        with st.chat_message(msg["role"], avatar=avatar):
+            st.write(msg["content"])
+
+    user_q = st.chat_input("Ví dụ: Tại sao HbA1c cao? Tôi nên ăn uống thế nào?")
+    if not user_q:
+        return
+
+    # Append user message and persist before calling LLM
+    display = list(st.session_state.get("chat_display", []))
+    display.append({"role": "user", "content": user_q})
+    st.session_state.chat_display = display
+
+    # Build initial history with context prompt on first turn
+    history = list(st.session_state.get("chat_history", []))
+    if not history:
+        from langchain_core.messages import SystemMessage
+        history = [SystemMessage(content=_build_context_prompt(patient, result))]
+
+    # Call the existing chat agent
+    reply = "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại."
+    try:
+        from src.agents.agent import run_agent_turn
+        from langchain_core.messages import AIMessage
+        with st.spinner("Lumina đang trả lời..."):
+            updated_history = run_agent_turn(user_q, history)
+        last_ai = next((m for m in reversed(updated_history) if isinstance(m, AIMessage)), None)
+        if last_ai:
+            reply = getattr(last_ai, "content", reply) or reply
+        st.session_state.chat_history = updated_history
+    except RuntimeError as e:
+        if "OPENAI_API_KEY" in str(e):
+            reply = "⚠️ Chưa cấu hình API key. Vui lòng thêm `OPENAI_API_KEY` vào file `.env` để dùng tính năng hỏi đáp."
+    except Exception:
+        pass  # keep default reply
+
+    display.append({"role": "assistant", "content": reply})
+    st.session_state.chat_display = display
+    st.rerun()
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Sidebar — Screen 1: Patient selector
 # ──────────────────────────────────────────────────────────────────────────────
@@ -201,10 +283,12 @@ options = _patient_options()
 selected_label = st.sidebar.radio("Chọn bệnh nhân:", list(options.keys()))
 patient_id = options[selected_label]
 
-# Reset AI result when patient changes
+# Reset everything when patient changes
 if st.session_state.get("selected_patient_id") != patient_id:
     st.session_state.selected_patient_id = patient_id
     st.session_state.workflow_result = None
+    st.session_state.chat_history = []
+    st.session_state.chat_display = []
 
 st.sidebar.divider()
 st.sidebar.info("🤖 AI hiểu dữ liệu — Bác sĩ hiểu bệnh nhân.")
@@ -228,9 +312,13 @@ with mid:
 if analyze:
     with st.spinner("Lumina đang phân tích..."):
         st.session_state.workflow_result = run_workflow(patient_id=patient_id)
+    # Reset chat so follow-up starts fresh for new analysis
+    st.session_state.chat_history = []
+    st.session_state.chat_display = []
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Main area — Screen 3: AI output panel
+# Main area — Screen 3: AI output panel + follow-up chat
 # ──────────────────────────────────────────────────────────────────────────────
 if st.session_state.get("workflow_result"):
     _render_ai_output(st.session_state.workflow_result)
+    _render_followup_chat(patient, st.session_state.workflow_result)
