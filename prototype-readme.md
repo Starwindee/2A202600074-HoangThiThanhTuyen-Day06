@@ -15,25 +15,27 @@ streamlit run app.py
 ## Link prototype
 
 - **GitHub repo:** https://github.com/abcdefya/NhomX1-401-Day06
+- **Slides:** [Demo slides (PDF)](./demo-slides.pdf)
+- **Demo video:** [Demo video (MP4)](./demo-video.mp4)
 
 ## Tools và API đã dùng
 
-| Layer | Tool / API |
-|---|---|
-| UI | Streamlit |
-| Workflow orchestration | LangGraph |
-| LLM | OpenAI API (Azure AI endpoint, `OPENAI_API_KEY`) |
-| LLM abstraction | LangChain, `langchain-openai`, `langchain-azure-ai`, `langchain-groq` |
-| Config | python-dotenv |
-| Data validation | Pydantic |
+| Layer                  | Tool / API                                                            |
+| ---------------------- | --------------------------------------------------------------------- |
+| UI                     | Streamlit                                                             |
+| Workflow orchestration | LangGraph                                                             |
+| LLM                    | OpenAI API (Azure AI endpoint, `OPENAI_API_KEY`)                      |
+| LLM abstraction        | LangChain, `langchain-openai`, `langchain-azure-ai`, `langchain-groq` |
+| Config                 | python-dotenv                                                         |
+| Data validation        | Pydantic                                                              |
 
 ## Phân công
 
-| Thành viên | MSSV | Vai trò | Trách nhiệm |
-|---|---|---|---|
-| Hoàng Thị Thanh Tuyền | 2A202600074 | UI Lead | Streamlit UI: sidebar chọn bệnh nhân, bảng kết quả xét nghiệm màu, panel AI output, nút feedback |
-| Lê Minh Khang | 2A202600102 | AI Logic | System prompt, `explain_node`, `suggest_node`, `lab_kb.py` |
-| Võ Thanh Chung | 2A202600040 | Data & Mock API | 3 file JSON bệnh nhân mẫu, `reference_ranges.py`, data loader |
-| Nguyễn Hồ Bảo Thiên | 2A202600163 | Guardrails | `guard_node` (critical threshold), `severity_node` (rule-based), post-LLM keyword filter |
-| Dương Khoa Điềm | 2A202600366 | LangGraph Orchestration | Wiring toàn bộ graph, `AgentState`, routing normal vs critical path, `run_workflow()` |
-| Đỗ Thế Anh | 2A202600335 | Integration & Demo | Kết nối UI ↔ workflow, CSS Vinmec colors, QA end-to-end, demo script |
+| Thành viên            | MSSV        | Vai trò                 | Trách nhiệm                                                                                      |
+| --------------------- | ----------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
+| Dương Khoa Điềm       | 2A202600366 | UI Lead                 | Streamlit UI: sidebar chọn bệnh nhân, bảng kết quả xét nghiệm màu, panel AI output, nút feedback |
+| Hoàng Thị Thanh Tuyền | 2A202600074 | AI Logic                | System prompt, `explain_node`, `suggest_node`, `lab_kb.py`                                       |
+| Võ Thanh Chung        | 2A202600335 | Data & Mock API         | 3 file JSON bệnh nhân mẫu, `reference_ranges.py`, data loader                                    |
+| Nguyễn Hồ Bảo Thiên   | 2A202600163 | Guardrails              | `guard_node` (critical threshold), `severity_node` (rule-based), post-LLM keyword filter         |
+| Lê Minh Khang         | 2A202600102 | LangGraph Orchestration | Wiring toàn bộ graph, `AgentState`, routing normal vs critical path, `run_workflow()`            |
+| Đỗ Thế Anh            | 2A202600040 | Integration & Demo      | Kết nối UI ↔ workflow, CSS Vinmec colors, QA end-to-end, demo script                             |
