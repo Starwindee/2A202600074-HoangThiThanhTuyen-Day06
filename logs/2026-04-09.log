@@ -42,3 +42,5 @@
 {"timestamp": "2026-04-09T06:36:21.284670", "event": "LLM_METRIC", "data": {"provider": "azure", "model": "gpt-4o", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 2285, "latency_ms": 6976, "cost_estimate": 0.022850000000000002}}
 {"timestamp": "2026-04-09T06:39:57.516175", "event": "DIRECT_RESPONSE", "data": {"content": "Dựa trên phiếu xét nghiệm, tôi nhận thấy nhiều chỉ số của bạn cao bất thường và có thể liên quan tới..."}}
 {"timestamp": "2026-04-09T06:39:57.519727", "event": "LLM_METRIC", "data": {"provider": "azure", "model": "gpt-4o", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 4154, "latency_ms": 12269, "cost_estimate": 0.04154}}
+{"timestamp": "2026-04-09T09:01:02.365158", "event": "DIRECT_RESPONSE", "data": {"content": "Chào anh Chung,\n\nDựa trên kết quả xét nghiệm của anh, tôi thấy có một số chỉ số bất thường, cụ thể n..."}}
+{"timestamp": "2026-04-09T09:01:02.365158", "event": "LLM_METRIC", "data": {"provider": "azure", "model": "gpt-4o", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 1013, "latency_ms": 7424, "cost_estimate": 0.010129999999999998}}

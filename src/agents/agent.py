@@ -10,6 +10,9 @@ from src.nodes.guard_node import guard_node
 from src.nodes.severity_node import severity_node
 from src.nodes.suggest_node import suggest_node
 from src.agents.state import AgentState
+from langchain_azure_ai.chat_models import AzureAIOpenAIApiChatModel
+from langchain_core.messages import HumanMessage
+import os
 
 
 def _route_from_guard(state: AgentState) -> str:
@@ -94,3 +97,20 @@ def run_workflow(*, patient_id: str | None = None, initial_state: AgentState | N
     state = initial_state if initial_state is not None else _state_from_patient_id(patient_id)  # type: ignore[arg-type]
     result = graph.invoke(state)
     return _fill_critical_defaults(result)
+
+
+def run_agent_turn(user_q: str, history: list):
+    """
+    Run a single turn of the chat agent for follow-up questions.
+    """
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY not set")
+    llm = AzureAIOpenAIApiChatModel(
+        endpoint="https://models.inference.ai.azure.com",
+        credential=api_key,
+        model="gpt-4o",
+    )
+    messages = history + [HumanMessage(content=user_q)]
+    response = llm.invoke(messages)
+    return messages + [response]
