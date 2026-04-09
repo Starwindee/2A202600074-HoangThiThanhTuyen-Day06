@@ -103,7 +103,7 @@ Nếu chỉ số cực bất thường:
 
 4. Lưu ý  
 Thông tin chỉ mang tính tham khảo, không thay thế bác sĩ.
-
+Nếu ngày xét nghiệm quá xa với hiện tại thì nên khuyên bệnh nhân đi xét nghiệm để lấy kết quả mới nhất.
 ---
 
 ### Ví dụ 2 (bất thường rõ)

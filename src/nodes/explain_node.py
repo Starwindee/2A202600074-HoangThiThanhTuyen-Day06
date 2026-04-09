@@ -15,9 +15,9 @@ load_dotenv()
 _BANNED_PATTERNS = [
     r"\bdiagnos(?:e|is)\b",
     r"\bprescrib(?:e|ed|ing)\b",
-    r"\bke don\b",
-    r"\bchan doan\b",
-    r"\bdung thuoc\b",
+    r"\bKê đơn thuốc\b",
+    r"\bChẩn đoán bệnh\b",
+    r"\bDùng thuốc\b",
 ]
 
 
