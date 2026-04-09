@@ -14,7 +14,7 @@ streamlit run app.py
 
 ## Link prototype
 
-- **GitHub repo:** https://github.com/abcdefya/Day06-401-X1-VinMecLumina
+- **GitHub repo:** https://github.com/abcdefya/NhomX1-401-Day06
 
 ## Tools và API đã dùng
 
